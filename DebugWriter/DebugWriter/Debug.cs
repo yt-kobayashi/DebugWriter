@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using XMLStreamWrapper;
 
-namespace DebugWriter
+namespace DebugWriterLib
 {
     public enum Mode
     {
@@ -12,6 +12,14 @@ namespace DebugWriter
         Status,
         Release
     }
+
+    public struct DebugMessage
+    {
+        public Mode Mode;
+        public int Number;
+        public string Message;
+    }
+
 
     public interface Writer
     {
@@ -51,13 +59,6 @@ namespace DebugWriter
 
     public abstract class Base : Writer
     {
-        protected struct DebugMessage
-        {
-            public Mode Mode;
-            public int Number;
-            public string Message;
-        }
-
         protected Dictionary<int, string> DebugMessages;
         protected Dictionary<int, string> ErrorMessages;
         protected Dictionary<int, string> StatusMessages;
@@ -106,16 +107,16 @@ namespace DebugWriter
                 switch (message.Mode)
                 {
                     case Mode.Error:
-                        DebugMessages.Add(message.Number, "[" + message.Number.ToString("digitFormat") + "]" + "[Error] " + message.Message);
-                        ErrorMessages.Add(message.Number, "[" + message.Number.ToString("digitFormat") + "]" + "[Error] " + message.Message);
+                        DebugMessages.Add(message.Number, "[" + message.Number.ToString(digitFormat) + "]" + "[Error] " + message.Message);
+                        ErrorMessages.Add(message.Number, "[" + message.Number.ToString(digitFormat) + "]" + "[Error] " + message.Message);
                         break;
                     case Mode.Status:
-                        DebugMessages.Add(message.Number, "[" + message.Number.ToString("digitFormat") + "]" + "[Status] " + message.Message);
-                        StatusMessages.Add(message.Number, "[" + message.Number.ToString("digitFormat") + "]" + "[Status] " + message.Message);
+                        DebugMessages.Add(message.Number, "[" + message.Number.ToString(digitFormat) + "]" + "[Status] " + message.Message);
+                        StatusMessages.Add(message.Number, "[" + message.Number.ToString(digitFormat) + "]" + "[Status] " + message.Message);
                         break;
                     case Mode.Release:
-                        DebugMessages.Add(message.Number, "[" + message.Number.ToString("digitFormat") + "]" + "[Release] " + message.Message);
-                        ReleaseMessages.Add(message.Number, "[" + message.Number.ToString("digitFormat") + "]" + "[Release] " + message.Message);
+                        DebugMessages.Add(message.Number, "[" + message.Number.ToString(digitFormat) + "]" + "[Release] " + message.Message);
+                        ReleaseMessages.Add(message.Number, "[" + message.Number.ToString(digitFormat) + "]" + "[Release] " + message.Message);
                         break;
                     default:
                         break;
@@ -128,7 +129,7 @@ namespace DebugWriter
             string message;
             string date;
             DateTime dateTime = DateTime.Now;
-            date = "[" + dateTime + dateTime.Millisecond + "]";
+            date = "[" + dateTime + "." + dateTime.Millisecond + "]";
 
             if(false == targetMessages.TryGetValue(messageNumber, out message))
             {
@@ -152,12 +153,12 @@ namespace DebugWriter
             messages.Add(setMessage(Mode.Error, 3, "Error3 サンプルエラーです"));
             messages.Add(setMessage(Mode.Error, 4, "Error4 サンプルエラーです"));
             messages.Add(setMessage(Mode.Error, 5, "Error5 サンプルエラーです"));
-            messages.Add(setMessage(Mode.Status, 0, "Success"));
-            messages.Add(setMessage(Mode.Status, 1, "Status1 サンプルステータスです"));
-            messages.Add(setMessage(Mode.Status, 2, "Status2 サンプルステータスです"));
-            messages.Add(setMessage(Mode.Status, 3, "Status3 サンプルステータスです"));
-            messages.Add(setMessage(Mode.Status, 4, "Status4 サンプルステータスです"));
-            messages.Add(setMessage(Mode.Status, 5, "Status5 サンプルステータスです"));
+            messages.Add(setMessage(Mode.Status, 1000, "Success"));
+            messages.Add(setMessage(Mode.Status, 1001, "Status1 サンプルステータスです"));
+            messages.Add(setMessage(Mode.Status, 1002, "Status2 サンプルステータスです"));
+            messages.Add(setMessage(Mode.Status, 1003, "Status3 サンプルステータスです"));
+            messages.Add(setMessage(Mode.Status, 1004, "Status4 サンプルステータスです"));
+            messages.Add(setMessage(Mode.Status, 1005, "Status5 サンプルステータスです"));
 
             SimpleXmlSerializerWrapper<List<DebugMessage>> serializer = new SimpleXmlSerializerWrapper<List<DebugMessage>>(messages, "sample.xml");
             serializer.Serialize();
