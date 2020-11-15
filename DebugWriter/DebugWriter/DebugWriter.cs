@@ -15,6 +15,19 @@ namespace DebugWriter
         void OutputMessage();
     }
 
+    public class Base
+    {
+        public Base()
+        {
+
+        }
+
+        public Base(in string filePath)
+        {
+
+        }
+    }
+
     public class DebugWriter : Writer
     {
         public void OutputMessage()
