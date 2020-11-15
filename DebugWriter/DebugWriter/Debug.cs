@@ -22,21 +22,26 @@ namespace DebugWriter
     {
         public Writer Writer { get; set; }
 
-        public DebugWriter(in Mode mode, in string filePath)
+        public DebugWriter(in Mode mode, in string filePath, in int digit = 4)
+        {
+            Initialize(mode, filePath, digit);
+        }
+
+        private void Initialize(in Mode mode, in string filePath, in int digit)
         {
             switch (mode)
             {
                     case Mode.Debug:
-                        Writer = new Debug(filePath);
+                        Writer = new Debug(filePath, digit);
                         break;
                     case Mode.Error:
-                        Writer = new Error(filePath);
+                        Writer = new Error(filePath, digit);
                         break;
                     case Mode.Status:
-                        Writer = new Status(filePath);
+                        Writer = new Status(filePath, digit);
                         break;
                     case Mode.Release:
-                        Writer = new Release(filePath);
+                        Writer = new Release(filePath, digit);
                         break;
                     default:
                         break;
@@ -73,7 +78,7 @@ namespace DebugWriter
             ReleaseMessages = new Dictionary<int, string>();
         }
 
-        protected void ReadMessageXml(in string filePath)
+        protected void ReadMessageXml(in string filePath, in int digit)
         {
             // Dictionaryの初期化
             InitializeDictionary();
@@ -89,26 +94,28 @@ namespace DebugWriter
             SimpleXmlSerializerWrapper<List<DebugMessage>> serializer = new SimpleXmlSerializerWrapper<List<DebugMessage>>(messages, filePath);
             messages = serializer.Deserialize();
             // Dictionaryにデータを詰める
-            SetMessages(messages);
+            SetMessages(messages, digit);
         }
 
-        protected void SetMessages(in List<DebugMessage> messages)
+        protected void SetMessages(in List<DebugMessage> messages, in int digit)
         {
+            string digitFormat = "D" + digit.ToString();
+
             foreach(DebugMessage message in messages)
             {
                 switch (message.Mode)
                 {
                     case Mode.Error:
-                        DebugMessages.Add(message.Number, "[" + message.Number.ToString() + "]" + "[Error] " + message.Message);
-                        ErrorMessages.Add(message.Number, "[" + message.Number.ToString() + "]" + "[Error] " + message.Message);
+                        DebugMessages.Add(message.Number, "[" + message.Number.ToString("digitFormat") + "]" + "[Error] " + message.Message);
+                        ErrorMessages.Add(message.Number, "[" + message.Number.ToString("digitFormat") + "]" + "[Error] " + message.Message);
                         break;
                     case Mode.Status:
-                        DebugMessages.Add(message.Number, "[" + message.Number.ToString() + "]" + "[Status] " + message.Message);
-                        StatusMessages.Add(message.Number, "[" + message.Number.ToString() + "]" + "[Status] " + message.Message);
+                        DebugMessages.Add(message.Number, "[" + message.Number.ToString("digitFormat") + "]" + "[Status] " + message.Message);
+                        StatusMessages.Add(message.Number, "[" + message.Number.ToString("digitFormat") + "]" + "[Status] " + message.Message);
                         break;
                     case Mode.Release:
-                        DebugMessages.Add(message.Number, "[" + message.Number.ToString() + "]" + "[Release] " + message.Message);
-                        ReleaseMessages.Add(message.Number, "[" + message.Number.ToString() + "]" + "[Release] " + message.Message);
+                        DebugMessages.Add(message.Number, "[" + message.Number.ToString("digitFormat") + "]" + "[Release] " + message.Message);
+                        ReleaseMessages.Add(message.Number, "[" + message.Number.ToString("digitFormat") + "]" + "[Release] " + message.Message);
                         break;
                     default:
                         break;
@@ -139,9 +146,9 @@ namespace DebugWriter
 
     public class Debug : Base
     {
-        public Debug(in string filePath)
+        public Debug(in string filePath, in int digit)
         {
-            ReadMessageXml(filePath);
+            ReadMessageXml(filePath, digit);
         }
 
         public override void OutputMessage(in int messageNumber, in string optionMessage = "")
@@ -152,9 +159,9 @@ namespace DebugWriter
 
     public class Error : Base
     {
-        public Error(in string filePath)
+        public Error(in string filePath, in int digit)
         {
-            ReadMessageXml(filePath);
+            ReadMessageXml(filePath, digit);
         }
 
         public override void OutputMessage(in int messageNumber, in string optionMessage = "")
@@ -165,9 +172,9 @@ namespace DebugWriter
 
     public class Status : Base
     {
-        public Status(in string filePath)
+        public Status(in string filePath, in int digit)
         {
-            ReadMessageXml(filePath);
+            ReadMessageXml(filePath, digit);
         }
 
         public override void OutputMessage(in int messageNumber, in string optionMessage = "")
@@ -178,9 +185,9 @@ namespace DebugWriter
 
     public class Release : Base
     {
-        public Release(in string filePath)
+        public Release(in string filePath, in int digit)
         {
-            ReadMessageXml(filePath);
+            ReadMessageXml(filePath, digit);
         }
 
         public override void OutputMessage(in int messageNumber, in string optionMessage = "")
