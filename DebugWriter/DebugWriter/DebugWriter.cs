@@ -19,7 +19,27 @@ namespace DebugWriter
     {
         public void OutputMessage()
         {
+        }
+    }
 
+    public class ErrorWriter : Writer
+    {
+        public void OutputMessage()
+        {
+        }
+    }
+
+    public class StatusWriter : Writer
+    {
+        public void OutputMessage()
+        {
+        }
+    }
+
+    public class ReleaseWriter : Writer
+    {
+        public void OutputMessage()
+        {
         }
     }
 }
