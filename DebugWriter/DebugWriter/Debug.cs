@@ -142,6 +142,36 @@ namespace DebugWriter
 
             Console.WriteLine(date + message);
         }
+
+        public void SampleXmlFile(in string filePath)
+        {
+            List<DebugMessage> messages = new List<DebugMessage>();
+            messages.Add(setMessage(Mode.Error, 0, "Success"));
+            messages.Add(setMessage(Mode.Error, 1, "Error1 サンプルエラーです"));
+            messages.Add(setMessage(Mode.Error, 2, "Error2 サンプルエラーです"));
+            messages.Add(setMessage(Mode.Error, 3, "Error3 サンプルエラーです"));
+            messages.Add(setMessage(Mode.Error, 4, "Error4 サンプルエラーです"));
+            messages.Add(setMessage(Mode.Error, 5, "Error5 サンプルエラーです"));
+            messages.Add(setMessage(Mode.Status, 0, "Success"));
+            messages.Add(setMessage(Mode.Status, 1, "Status1 サンプルステータスです"));
+            messages.Add(setMessage(Mode.Status, 2, "Status2 サンプルステータスです"));
+            messages.Add(setMessage(Mode.Status, 3, "Status3 サンプルステータスです"));
+            messages.Add(setMessage(Mode.Status, 4, "Status4 サンプルステータスです"));
+            messages.Add(setMessage(Mode.Status, 5, "Status5 サンプルステータスです"));
+
+            SimpleXmlSerializerWrapper<List<DebugMessage>> serializer = new SimpleXmlSerializerWrapper<List<DebugMessage>>(messages, "sample.xml");
+            serializer.Serialize();
+        }
+
+        private DebugMessage setMessage(in Mode mode, in int number, in string message)
+        {
+            DebugMessage debugMessage = new DebugMessage();
+            debugMessage.Mode = mode;
+            debugMessage.Number = number;
+            debugMessage.Message = message;
+
+            return debugMessage;
+        }
     }
 
     public class Debug : Base
@@ -187,12 +217,10 @@ namespace DebugWriter
     {
         public Release(in string filePath, in int digit)
         {
-            ReadMessageXml(filePath, digit);
         }
 
         public override void OutputMessage(in int messageNumber, in string optionMessage = "")
         {
-            Output(ReleaseMessages, messageNumber, optionMessage);
         }
     }
 }
