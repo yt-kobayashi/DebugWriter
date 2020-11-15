@@ -2,6 +2,14 @@
 
 namespace DebugWriter
 {
+    public enum Mode
+    {
+        Debug,
+        Error,
+        Status,
+        Release
+    }
+
     public interface Writer
     {
         void OutputDebugWindow();
