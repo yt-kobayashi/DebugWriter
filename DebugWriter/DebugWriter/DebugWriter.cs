@@ -12,12 +12,12 @@ namespace DebugWriter
 
     public interface Writer
     {
-        void OutputDebugWindow();
+        void OutputMessage();
     }
 
     public class DebugWriter : Writer
     {
-        public void OutputDebugWindow()
+        public void OutputMessage()
         {
 
         }
