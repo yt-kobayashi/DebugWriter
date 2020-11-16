@@ -98,7 +98,7 @@ namespace DebugWriterLib
             SetMessages(messages, digit);
         }
 
-        protected void SetMessages(in List<DebugMessage> messages, in int digit)
+        public void SetMessages(in List<DebugMessage> messages, in int digit)
         {
             string digitFormat = "D" + digit.ToString();
 
