@@ -26,26 +26,31 @@ namespace Test
         {
             InitializeComponent();
 
-            Debugger debugger = new Debugger();
-            string loadFilePath = "";
-            string saveFilePath = "";
-            OpenFileDialog openDialog = new OpenFileDialog();
-            SaveFileDialog saveDialog = new SaveFileDialog();
+        }
 
-            if(false == openDialog.ShowDialog())
-            {
-                return;
-            }
-
-            if(false == saveDialog.ShowDialog())
-            {
-                return;
-            }
-
-            loadFilePath = openDialog.FileName;
-            saveFilePath = saveDialog.FileName;
-
-            debugger.XlsxToXml(loadFilePath, saveFilePath);
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Debugger debugger = new Debugger(Mode.Debug);
+            debugger.Debug.Write("テスト開始");
+            debugger.Debug.Write("デバッグメッセージ");
+            debugger.Error.Write("エラーメッセージ");
+            debugger.Status.Write("ステータスメッセージ");
+            debugger.Release.Write("リリースメッセージ");
+            debugger = new Debugger(Mode.Error);
+            debugger.Debug.Write("デバッグメッセージ");
+            debugger.Error.Write("エラーメッセージ");
+            debugger.Status.Write("ステータスメッセージ");
+            debugger.Release.Write("リリースメッセージ");
+            debugger = new Debugger(Mode.Status);
+            debugger.Debug.Write("デバッグメッセージ");
+            debugger.Error.Write("エラーメッセージ");
+            debugger.Status.Write("ステータスメッセージ");
+            debugger.Release.Write("リリースメッセージ");
+            debugger = new Debugger(Mode.Release);
+            debugger.Debug.Write("デバッグメッセージ");
+            debugger.Error.Write("エラーメッセージ");
+            debugger.Status.Write("ステータスメッセージ");
+            debugger.Release.Write("リリースメッセージ");
         }
     }
 }
