@@ -106,6 +106,9 @@ namespace DebugWriterLib
             {
                 switch (message.Mode)
                 {
+                    case Mode.Debug:
+                        DebugMessages.Add(message.Number, "[" + message.Number.ToString(digitFormat) + "]" + "[Debug] " + message.Message);
+                        break;
                     case Mode.Error:
                         DebugMessages.Add(message.Number, "[" + message.Number.ToString(digitFormat) + "]" + "[Error] " + message.Message);
                         ErrorMessages.Add(message.Number, "[" + message.Number.ToString(digitFormat) + "]" + "[Error] " + message.Message);
@@ -142,36 +145,6 @@ namespace DebugWriterLib
             }
 
             Console.WriteLine(date + message);
-        }
-
-        public void SampleXmlFile(in string filePath)
-        {
-            List<DebugMessage> messages = new List<DebugMessage>();
-            messages.Add(setMessage(Mode.Error, 0, "Success"));
-            messages.Add(setMessage(Mode.Error, 1, "Error1 サンプルエラーです"));
-            messages.Add(setMessage(Mode.Error, 2, "Error2 サンプルエラーです"));
-            messages.Add(setMessage(Mode.Error, 3, "Error3 サンプルエラーです"));
-            messages.Add(setMessage(Mode.Error, 4, "Error4 サンプルエラーです"));
-            messages.Add(setMessage(Mode.Error, 5, "Error5 サンプルエラーです"));
-            messages.Add(setMessage(Mode.Status, 1000, "Success"));
-            messages.Add(setMessage(Mode.Status, 1001, "Status1 サンプルステータスです"));
-            messages.Add(setMessage(Mode.Status, 1002, "Status2 サンプルステータスです"));
-            messages.Add(setMessage(Mode.Status, 1003, "Status3 サンプルステータスです"));
-            messages.Add(setMessage(Mode.Status, 1004, "Status4 サンプルステータスです"));
-            messages.Add(setMessage(Mode.Status, 1005, "Status5 サンプルステータスです"));
-
-            SimpleXmlSerializerWrapper<List<DebugMessage>> serializer = new SimpleXmlSerializerWrapper<List<DebugMessage>>(messages, "sample.xml");
-            serializer.Serialize();
-        }
-
-        private DebugMessage setMessage(in Mode mode, in int number, in string message)
-        {
-            DebugMessage debugMessage = new DebugMessage();
-            debugMessage.Mode = mode;
-            debugMessage.Number = number;
-            debugMessage.Message = message;
-
-            return debugMessage;
         }
     }
 
