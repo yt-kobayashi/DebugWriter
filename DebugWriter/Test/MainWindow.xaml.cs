@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using DebuggerLib;
+using Microsoft.Win32;
 
 namespace Test
 {
@@ -23,6 +25,27 @@ namespace Test
         public MainWindow()
         {
             InitializeComponent();
+
+            Debugger debugger = new Debugger();
+            string loadFilePath = "";
+            string saveFilePath = "";
+            OpenFileDialog openDialog = new OpenFileDialog();
+            SaveFileDialog saveDialog = new SaveFileDialog();
+
+            if(false == openDialog.ShowDialog())
+            {
+                return;
+            }
+
+            if(false == saveDialog.ShowDialog())
+            {
+                return;
+            }
+
+            loadFilePath = openDialog.FileName;
+            saveFilePath = saveDialog.FileName;
+
+            debugger.XlsxToXml(loadFilePath, saveFilePath);
         }
     }
 }

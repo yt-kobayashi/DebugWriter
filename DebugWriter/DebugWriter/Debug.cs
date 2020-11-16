@@ -31,12 +31,16 @@ namespace DebuggerLib
     {
         public Writer Writer { get; set; }
 
+        public Debugger()
+        {
+        }
+
         public Debugger(in Mode mode, in string filePath, in int digit = 4)
         {
             Initialize(mode, filePath, digit);
         }
 
-        private void Initialize(in Mode mode, in string filePath, in int digit)
+        public void Initialize(in Mode mode, in string filePath, in int digit)
         {
             switch (mode)
             {
