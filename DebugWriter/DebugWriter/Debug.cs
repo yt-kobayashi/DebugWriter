@@ -10,20 +10,20 @@ namespace DebuggerLib
         Release
     }
 
-    public interface DebuggerWriter
+    public interface Writer
     {
         void Write(in string message);
     }
 
-    public class YoshiDebugger
+    public class Debugger
     {
-        public DebuggerWriter Debug { get; set; }
-        public DebuggerWriter Error { get; set; }
-        public DebuggerWriter Status { get; set; }
-        public DebuggerWriter Release { get; set; }
+        public Writer Debug { get; set; }
+        public Writer Error { get; set; }
+        public Writer Status { get; set; }
+        public Writer Release { get; set; }
 
-        public YoshiDebugger() { }
-        public YoshiDebugger(in Mode mode)
+        public Debugger() { }
+        public Debugger(in Mode mode)
         {
             Initialize(mode);
         }
@@ -62,9 +62,9 @@ namespace DebuggerLib
             return true;
         }
 
-        public DebuggerWriter SetWriter(in bool enable, in Mode mode)
+        public Writer SetWriter(in bool enable, in Mode mode)
         {
-            DebuggerWriter debugWriter;
+            Writer debugWriter;
 
             if (enable)
             {
@@ -78,7 +78,7 @@ namespace DebuggerLib
             return debugWriter;
         }
 
-        public class DebugWriter : DebuggerWriter
+        public class DebugWriter : Writer
         {
             private string WriterMode { get; set; }
 
@@ -87,16 +87,16 @@ namespace DebuggerLib
                 switch (mode)
                 {
                     case Mode.Debug:
-                        WriterMode = "[Debug]";
+                        WriterMode = "[Debug  ] : ";
                         break;
                     case Mode.Error:
-                        WriterMode = "[Error]";
+                        WriterMode = "[Error  ] : ";
                         break;
                     case Mode.Status:
-                        WriterMode = "[Status]";
+                        WriterMode = "[Status ] : ";
                         break;
                     case Mode.Release:
-                        WriterMode = "[Release]";
+                        WriterMode = "[Release] : ";
                         break;
                     default:
                         break;
@@ -113,7 +113,7 @@ namespace DebuggerLib
             }
         }
 
-        public class DebugWriterEmpty : DebuggerWriter
+        public class DebugWriterEmpty : Writer
         {
             public void Write(in string message) { }
         }
