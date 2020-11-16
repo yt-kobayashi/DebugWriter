@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using ClosedXML.Excel;
 using XMLStreamWrapper;
 
-namespace DebugWriterLib
+namespace DebuggerLib
 {
     public enum Mode
     {
@@ -26,16 +27,20 @@ namespace DebugWriterLib
         void OutputMessage(in int messageNumber, in string optionMessage = "");
     }
 
-    public class DebugWriter
+    public class Debugger
     {
         public Writer Writer { get; set; }
 
-        public DebugWriter(in Mode mode, in string filePath, in int digit = 4)
+        public Debugger()
+        {
+        }
+
+        public Debugger(in Mode mode, in string filePath, in int digit = 4)
         {
             Initialize(mode, filePath, digit);
         }
 
-        private void Initialize(in Mode mode, in string filePath, in int digit)
+        public void Initialize(in Mode mode, in string filePath, in int digit)
         {
             switch (mode)
             {
@@ -54,6 +59,122 @@ namespace DebugWriterLib
                     default:
                         break;
             }
+        }
+
+        public void XlsxToXml(in string xlsxFilePath, in string xmlFilePath, in int startRowNum = 2)
+        {
+            List<DebugMessage> messages = new List<DebugMessage>();                     // デバッグメッセージリスト
+            string extension = xlsxFilePath.Substring(xlsxFilePath.Length - 5);         // 拡張子
+            SimpleXmlSerializerWrapper<List<DebugMessage>> serialize = new SimpleXmlSerializerWrapper<List<DebugMessage>>(messages, xmlFilePath);
+
+            // ファイルが存在しない場合は変換終了
+            if(false == File.Exists(xlsxFilePath))
+            {
+                Console.WriteLine("Xlsx file not found!");
+                return;
+            }
+
+            // 拡張子がxlsxかXlsxのもの出なければ変換終了
+            if(".xlsx" != extension && ".Xlsx" != extension)
+            {
+                Console.WriteLine("Not xlsx or Xlsx file!");
+                return;
+            }
+
+            // ExcelファイルからDebugMessageListを生成できなければ変換終了
+            if(false == SetDebugMessageList(xlsxFilePath, startRowNum, ref messages))
+            {
+                Console.WriteLine("Failed set DebugMessage list!");
+                return;
+            }
+
+            serialize.Serialize();
+        }
+
+        private bool SetDebugMessageList(in string xlsxFilePath, in int startRowNum, ref List<DebugMessage> messages)
+        {
+            // ワークブック取得
+            XLWorkbook workbook = new XLWorkbook(xlsxFilePath);
+            foreach(IXLWorksheet worksheet in workbook.Worksheets)
+            {
+                // 最終行番号を取得
+                int lastRowNum = worksheet.LastRowUsed().RowNumber();
+
+                // 取得を開始する行が範囲外なら変換終了
+                if(startRowNum < 1 || lastRowNum <= startRowNum)
+                {
+                    Console.WriteLine("Not in the range of 1 to last row number!");
+                    return false;
+                }
+
+                // 各要素を取得
+                // 1行目は見出しと考えて処理をしない
+                for (int rowNum = startRowNum; rowNum <= lastRowNum; rowNum++)
+                {
+                    DebugMessage debugMessage = new DebugMessage();         // デバッグメッセージ
+
+                    // パラメータが入っているセルを取得
+                    IXLCell mode = worksheet.Cell(rowNum, 1);
+                    IXLCell num = worksheet.Cell(rowNum, 2);
+                    IXLCell message = worksheet.Cell(rowNum, 3);
+
+                    // デバッグメッセージを取得できなかった場合は次の処理に移る
+                    if (false == SetDebugMessage(mode.Value.ToString(), num.Value.ToString(), message.Value.ToString(), ref debugMessage))
+                    {
+                        Console.WriteLine("Failed set DebugMessage!");
+                        continue;
+                    }
+
+                    // デバッグメッセージをリストに追加する
+                    messages.Add(debugMessage);
+                }
+            }
+
+            return true;
+        }
+
+        private bool SetDebugMessage(in string mode, in string num, in string message, ref DebugMessage result)
+        {
+            Mode tempMode = Mode.Debug;
+            int tempNumber = 0;
+            string tempMessage = "DebugMessage";
+
+            // モード選択
+            switch (mode)
+            {
+                case "Debug":
+                    tempMode = Mode.Debug;
+                    break;
+                case "Error":
+                    tempMode = Mode.Error;
+                    break;
+                case "Status":
+                    tempMode = Mode.Status;
+                    break;
+                case "Release":
+                    tempMode = Mode.Release;
+                    break;
+                default:
+                    Console.WriteLine("Mode not found! : " + mode);
+                    return false;
+                    break;
+            }
+
+            // メッセージ番号をstringからintへ変換
+            if(false == int.TryParse(num, out tempNumber))
+            {
+                Console.WriteLine("Not number!");
+                return false;
+            }
+
+            tempMessage = message;
+
+            // パラメータ設定
+            result.Mode = tempMode;
+            result.Number = tempNumber;
+            result.Message = tempMessage;
+
+            return true;
         }
     }
 
@@ -98,7 +219,7 @@ namespace DebugWriterLib
             SetMessages(messages, digit);
         }
 
-        public void SetMessages(in List<DebugMessage> messages, in int digit)
+        protected void SetMessages(in List<DebugMessage> messages, in int digit)
         {
             string digitFormat = "D" + digit.ToString();
 
@@ -106,6 +227,9 @@ namespace DebugWriterLib
             {
                 switch (message.Mode)
                 {
+                    case Mode.Debug:
+                        DebugMessages.Add(message.Number, "[" + message.Number.ToString(digitFormat) + "]" + "[Debug] " + message.Message);
+                        break;
                     case Mode.Error:
                         DebugMessages.Add(message.Number, "[" + message.Number.ToString(digitFormat) + "]" + "[Error] " + message.Message);
                         ErrorMessages.Add(message.Number, "[" + message.Number.ToString(digitFormat) + "]" + "[Error] " + message.Message);
@@ -142,36 +266,6 @@ namespace DebugWriterLib
             }
 
             Console.WriteLine(date + message);
-        }
-
-        public void SampleXmlFile(in string filePath)
-        {
-            List<DebugMessage> messages = new List<DebugMessage>();
-            messages.Add(setMessage(Mode.Error, 0, "Success"));
-            messages.Add(setMessage(Mode.Error, 1, "Error1 サンプルエラーです"));
-            messages.Add(setMessage(Mode.Error, 2, "Error2 サンプルエラーです"));
-            messages.Add(setMessage(Mode.Error, 3, "Error3 サンプルエラーです"));
-            messages.Add(setMessage(Mode.Error, 4, "Error4 サンプルエラーです"));
-            messages.Add(setMessage(Mode.Error, 5, "Error5 サンプルエラーです"));
-            messages.Add(setMessage(Mode.Status, 1000, "Success"));
-            messages.Add(setMessage(Mode.Status, 1001, "Status1 サンプルステータスです"));
-            messages.Add(setMessage(Mode.Status, 1002, "Status2 サンプルステータスです"));
-            messages.Add(setMessage(Mode.Status, 1003, "Status3 サンプルステータスです"));
-            messages.Add(setMessage(Mode.Status, 1004, "Status4 サンプルステータスです"));
-            messages.Add(setMessage(Mode.Status, 1005, "Status5 サンプルステータスです"));
-
-            SimpleXmlSerializerWrapper<List<DebugMessage>> serializer = new SimpleXmlSerializerWrapper<List<DebugMessage>>(messages, "sample.xml");
-            serializer.Serialize();
-        }
-
-        private DebugMessage setMessage(in Mode mode, in int number, in string message)
-        {
-            DebugMessage debugMessage = new DebugMessage();
-            debugMessage.Mode = mode;
-            debugMessage.Number = number;
-            debugMessage.Message = message;
-
-            return debugMessage;
         }
     }
 
