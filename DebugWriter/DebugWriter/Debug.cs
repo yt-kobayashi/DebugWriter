@@ -26,11 +26,11 @@ namespace DebugWriterLib
         void OutputMessage(in int messageNumber, in string optionMessage = "");
     }
 
-    public class DebugWriter
+    public class Debugger
     {
         public Writer Writer { get; set; }
 
-        public DebugWriter(in Mode mode, in string filePath, in int digit = 4)
+        public Debugger(in Mode mode, in string filePath, in int digit = 4)
         {
             Initialize(mode, filePath, digit);
         }
@@ -98,7 +98,7 @@ namespace DebugWriterLib
             SetMessages(messages, digit);
         }
 
-        public void SetMessages(in List<DebugMessage> messages, in int digit)
+        protected void SetMessages(in List<DebugMessage> messages, in int digit)
         {
             string digitFormat = "D" + digit.ToString();
 
