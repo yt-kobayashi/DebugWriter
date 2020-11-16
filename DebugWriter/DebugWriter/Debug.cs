@@ -167,6 +167,8 @@ namespace DebuggerLib
                 return false;
             }
 
+            tempMessage = message;
+
             // パラメータ設定
             result.Mode = tempMode;
             result.Number = tempNumber;
