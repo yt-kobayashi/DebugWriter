@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace DebuggerLib
@@ -13,6 +14,19 @@ namespace DebuggerLib
         Enter
     }
 
+    public class MessageFormat
+    {
+        public const byte Date = 1;
+        public const byte Mode = 2;
+        public const byte Caller = 4;
+        public const byte Number = 8;
+        public const byte EnterMessage = 16;
+        public const byte Message = 32;
+        public const byte DEFAULT = (byte)(Date | Mode | Caller | Message);
+        public const byte ENTER = (byte)(Date | Mode | Caller | EnterMessage | Message);
+    }
+
+
     public interface Writer
     {
         void Write(in string message = "", [CallerMemberName] string callerName = "", [CallerLineNumber] int lineNumber = 0);
@@ -20,71 +34,40 @@ namespace DebuggerLib
 
     public class Debugger
     {
+
         public Writer Debug { get; set; }
         public Writer Error { get; set; }
         public Writer Status { get; set; }
         public Writer Enter { get; set; }
 
-        private bool EnableCaller { get; set; }
-        private bool EnableLineNumber { get; set; }
+        private Dictionary<Mode, bool[]> ModeParam { get; set; }
 
-        public Debugger() { }
-        public Debugger(in Mode mode, in bool enableCaller = true, in bool enableLineNumber = true)
+        public Debugger(in Mode mode, in byte format = MessageFormat.DEFAULT)
         {
-            EnableCaller = enableCaller;
-            EnableLineNumber = enableLineNumber;
-            Initialize(mode);
-        }
-        public Debugger(in bool enableDebug, in bool enableError, in bool enableStatus, in bool enableEnter, in bool enableCaller = true, in bool enableLineNumber = true)
-        {
-            EnableCaller = enableCaller;
-            EnableLineNumber = enableLineNumber;
-            SetWriters(enableDebug, enableError, enableStatus, enableEnter);
+            ModeParam = new Dictionary<Mode, bool[]>();
+            ModeParam.Add(Mode.Debug, new bool[] { true, true, true, true});
+            ModeParam.Add(Mode.Error, new bool[] { false, true, false, false});
+            ModeParam.Add(Mode.Trace, new bool[] { false, false, true, true});
+            ModeParam.Add(Mode.Status, new bool[] { false, false, true, false});
+            ModeParam.Add(Mode.Enter, new bool[] { false, false, false, true});
+            ModeParam.Add(Mode.Release, new bool[] { false, false, false, false});
+
+            Initialize(mode, format);
         }
 
-        public bool Initialize(in Mode mode)
+        public void Initialize(in Mode mode, in byte format)
         {
-            switch (mode)
-            {
-                case Mode.Debug:
-                    SetWriters(true, true, true, true);
-                    break;
-                case Mode.Error:
-                    SetWriters(false, true, false, false);
-                    break;
-                case Mode.Status:
-                    SetWriters(false, false, true, false);
-                    break;
-                case Mode.Trace:
-                    SetWriters(false, true, true, true);
-                    break;
-                case Mode.Release:
-                    SetWriters(false, false, false, false);
-                    break;
-                case Mode.Enter:
-                    SetWriters(false, false, false, true);
-                    break;
-                default:
-                    SetWriters(false, false, false, false);
-                    break;
-            }
+            bool[] param = ModeParam[mode];
 
-            return true;
+            Debug = SetWriter(param[0], Mode.Debug, format);
+            Error = SetWriter(param[1], Mode.Error, format);
+            Status = SetWriter(param[2], Mode.Status, format);
+            Enter = SetWriter(param[3], Mode.Enter, format);
         }
 
-        public bool SetWriters(in bool enableDebug, in bool enableError, in bool enableStatus, in bool enableEnter)
+        public Writer SetWriter(in bool enable, in Mode mode, in byte format)
         {
-            Debug = SetWriter(enableDebug, Mode.Debug);
-            Error = SetWriter(enableError, Mode.Error);
-            Status = SetWriter(enableStatus, Mode.Status);
-            Enter = SetWriter(enableEnter, Mode.Enter);
-
-            return true;
-        }
-
-        public Writer SetWriter(in bool enable, in Mode mode)
-        {
-            Writer debugWriter = new DebugWriter(mode, EnableCaller, EnableLineNumber);
+            Writer debugWriter = new DebugWriter(mode, format);
 
             if (false == enable)
             {
@@ -93,60 +76,59 @@ namespace DebuggerLib
 
             return debugWriter;
         }
-
     }
 
     public class DebugWriter : Writer
     {
         private string WriterMode { get; set; }
-        private string EnterMessage { get; set; }
-        private bool EnableCaller { get; set; }
-        private bool EnableLineNumber { get; set; }
+        private string EnterMessage { get; set; } = "";
+        private string Format { get; set; }
 
-        public DebugWriter(in Mode mode, in bool enableCaller = true, in bool enableLineNumber = true)
+        public DebugWriter(in Mode mode, in byte format = MessageFormat.DEFAULT)
         {
-            EnterMessage = "";
-            EnableCaller = enableCaller;
-            EnableLineNumber = enableLineNumber;
-
-            switch (mode)
+            byte messageFormat = format;
+            if (Mode.Enter == mode)
             {
-                case Mode.Debug:
-                    WriterMode = "[Debug ]";
-                    break;
-                case Mode.Error:
-                    WriterMode = "[Error ]";
-                    break;
-                case Mode.Status:
-                    WriterMode = "[Status]";
-                    break;
-                case Mode.Enter:
-                    WriterMode = "[Enter ]";
-                    EnterMessage = "Enter";
-                    break;
-                default:
-                    break;
+                messageFormat = (byte)(messageFormat | (byte)MessageFormat.EnterMessage);
+                EnterMessage = " - Enter";
+            }
+
+            WriterMode = mode.ToString();
+            byte mask;
+
+            for(int count = 0; count < 8; count++)
+            {
+                mask = (byte)(1 << count);
+
+                if(0 == (messageFormat & mask))
+                {
+                    continue;
+                }
+                else if(MessageFormat.Message == mask)
+                {
+                    Format += " : {" + count.ToString() + "}";
+                }
+                else if(MessageFormat.EnterMessage == mask)
+                {
+                    Format += "{" + count.ToString() + "}";
+                }
+                else
+                {
+                    Format += "[{" + count.ToString() + "}]";
+                }
             }
         }
 
         public void Write(in string message = "", [CallerMemberName] string callerName = "", [CallerLineNumber] int lineNumber = 0)
         {
-            string caller = "";
-            if ("" != callerName && true == EnableCaller)
-            {
-                caller = "[" + callerName + "]";
-            }
-            if (true == EnableLineNumber)
-            {
-                caller += "[Line " + lineNumber + "]";
-            }
+            List<string> messageList = new List<string>();
+            string debugMessage = "";
+            string number = "Line " + lineNumber.ToString();
+            string date = string.Format("{0}.{1}", DateTime.Now, DateTime.Now.Millisecond);
 
+            debugMessage = string.Format(Format, date, WriterMode, callerName, number, EnterMessage, message);
 
-            string date;
-            DateTime dateTime = DateTime.Now;
-            date = "[" + dateTime + "." + dateTime.Millisecond + "]";
-
-            Console.WriteLine(date + WriterMode + caller + " : " + EnterMessage + message);
+            Console.WriteLine(debugMessage);
         }
     }
 

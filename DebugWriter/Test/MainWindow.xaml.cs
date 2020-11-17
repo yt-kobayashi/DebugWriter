@@ -25,7 +25,6 @@ namespace Test
         public MainWindow()
         {
             InitializeComponent();
-
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -36,13 +35,13 @@ namespace Test
             debugger.Debug.Write("デバッグメッセージ");
             debugger.Error.Write("エラーメッセージ");
             debugger.Status.Write("ステータスメッセージ");
-            debugger = new Debugger(Mode.Debug, true, false);
+            debugger = new Debugger(Mode.Debug, 55);
             debugger.Enter.Write();
             debugger.Debug.Write("テスト開始");
             debugger.Debug.Write("デバッグメッセージ");
             debugger.Error.Write("エラーメッセージ");
             debugger.Status.Write("ステータスメッセージ");
-            debugger = new Debugger(Mode.Debug, false, true);
+            debugger = new Debugger(Mode.Debug, 43);
             debugger.Enter.Write();
             debugger.Debug.Write("テスト開始");
             debugger.Debug.Write("デバッグメッセージ");
