@@ -100,21 +100,22 @@ namespace DebuggerLib
             {
                 mask = (byte)(1 << count);
 
-                if(0 == (messageFormat & mask))
+                switch(messageFormat & mask)
                 {
-                    continue;
-                }
-                else if(MessageFormat.Message == mask)
-                {
-                    Format += " : {" + count.ToString() + "}";
-                }
-                else if(MessageFormat.EnterMessage == mask)
-                {
-                    Format += "{" + count.ToString() + "}";
-                }
-                else
-                {
-                    Format += "[{" + count.ToString() + "}]";
+                    case MessageFormat.Date:
+                    case MessageFormat.Mode:
+                    case MessageFormat.Caller:
+                    case MessageFormat.Number:
+                        Format += "[{" + count.ToString() + "}]";
+                        break;
+                    case MessageFormat.EnterMessage:
+                        Format += "{" + count.ToString() + "}";
+                        break;
+                    case MessageFormat.Message:
+                        Format += " : {" + count.ToString() + "}";
+                        break;
+                    default:
+                        break;
                 }
             }
         }
