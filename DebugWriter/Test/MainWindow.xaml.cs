@@ -31,26 +31,43 @@ namespace Test
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Debugger debugger = new Debugger(Mode.Debug);
+            debugger.Enter.Write();
             debugger.Debug.Write("テスト開始");
             debugger.Debug.Write("デバッグメッセージ");
             debugger.Error.Write("エラーメッセージ");
             debugger.Status.Write("ステータスメッセージ");
-            debugger.Release.Write("リリースメッセージ");
+            debugger = new Debugger(Mode.Debug, true, false);
+            debugger.Enter.Write();
+            debugger.Debug.Write("テスト開始");
+            debugger.Debug.Write("デバッグメッセージ");
+            debugger.Error.Write("エラーメッセージ");
+            debugger.Status.Write("ステータスメッセージ");
+            debugger = new Debugger(Mode.Debug, false, true);
+            debugger.Enter.Write();
+            debugger.Debug.Write("テスト開始");
+            debugger.Debug.Write("デバッグメッセージ");
+            debugger.Error.Write("エラーメッセージ");
+            debugger.Status.Write("ステータスメッセージ");
             debugger = new Debugger(Mode.Error);
+            debugger.Enter.Write();
             debugger.Debug.Write("デバッグメッセージ");
             debugger.Error.Write("エラーメッセージ");
             debugger.Status.Write("ステータスメッセージ");
-            debugger.Release.Write("リリースメッセージ");
             debugger = new Debugger(Mode.Status);
+            debugger.Enter.Write();
             debugger.Debug.Write("デバッグメッセージ");
             debugger.Error.Write("エラーメッセージ");
             debugger.Status.Write("ステータスメッセージ");
-            debugger.Release.Write("リリースメッセージ");
+            debugger = new Debugger(Mode.Trace);
+            debugger.Enter.Write();
+            debugger.Debug.Write("デバッグメッセージ");
+            debugger.Error.Write("エラーメッセージ");
+            debugger.Status.Write("ステータスメッセージ");
             debugger = new Debugger(Mode.Release);
+            debugger.Enter.Write();
             debugger.Debug.Write("デバッグメッセージ");
             debugger.Error.Write("エラーメッセージ");
             debugger.Status.Write("ステータスメッセージ");
-            debugger.Release.Write("リリースメッセージ");
         }
     }
 }
