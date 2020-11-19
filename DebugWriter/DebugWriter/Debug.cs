@@ -11,7 +11,8 @@ namespace DebuggerLib
         Status,
         Trace,
         Release,
-        Enter
+        Enter,
+        Exit
     }
 
     public class MessageFormat
@@ -21,9 +22,13 @@ namespace DebuggerLib
         public const byte Caller = 4;
         public const byte Number = 8;
         public const byte EnterMessage = 16;
-        public const byte Message = 32;
+        public const byte ExitMessage = 32;
+        public const byte Message = 64;
         public const byte DEFAULT = (byte)(Date | Mode | Caller | Message);
         public const byte ENTER = (byte)(Date | Mode | Caller | EnterMessage | Message);
+        public const byte EXIT = (byte)(Date | Mode | Caller | ExitMessage | Message);
+        public const string HasEnteredMessage = " - Enter";
+        public const string HasExitMessage = " - Exit";
     }
 
 
@@ -34,11 +39,11 @@ namespace DebuggerLib
 
     public class Debugger
     {
-
         public Writer Debug { get; set; }
         public Writer Error { get; set; }
         public Writer Status { get; set; }
         public Writer Enter { get; set; }
+        public Writer Exit { get; set; }
 
         private Dictionary<Mode, bool[]> ModeParam { get; set; }
 
@@ -50,6 +55,7 @@ namespace DebuggerLib
             ModeParam.Add(Mode.Trace, new bool[] { false, false, true, true});
             ModeParam.Add(Mode.Status, new bool[] { false, false, true, false});
             ModeParam.Add(Mode.Enter, new bool[] { false, false, false, true});
+            ModeParam.Add(Mode.Exit, new bool[] { false, false, false, true});
             ModeParam.Add(Mode.Release, new bool[] { false, false, false, false});
 
             Initialize(mode, format);
@@ -63,6 +69,7 @@ namespace DebuggerLib
             Error = SetWriter(param[1], Mode.Error, format);
             Status = SetWriter(param[2], Mode.Status, format);
             Enter = SetWriter(param[3], Mode.Enter, format);
+            Exit = SetWriter(param[3], Mode.Exit, format);
         }
 
         public Writer SetWriter(in bool enable, in Mode mode, in byte format)
@@ -82,6 +89,7 @@ namespace DebuggerLib
     {
         private string WriterMode { get; set; }
         private string EnterMessage { get; set; } = "";
+        private string ExitMessage { get; set; } = "";
         private string Format { get; set; }
 
         public DebugWriter(in Mode mode, in byte format = MessageFormat.DEFAULT)
@@ -89,8 +97,13 @@ namespace DebuggerLib
             byte messageFormat = format;
             if (Mode.Enter == mode)
             {
-                messageFormat = (byte)(messageFormat | (byte)MessageFormat.EnterMessage);
-                EnterMessage = " - Enter";
+                messageFormat = MessageFormat.ENTER;
+                EnterMessage = MessageFormat.HasEnteredMessage;
+            }
+            else if(Mode.Exit == mode)
+            {
+                messageFormat = MessageFormat.EXIT;
+                ExitMessage = MessageFormat.HasExitMessage;
             }
 
             WriterMode = mode.ToString();
@@ -111,6 +124,9 @@ namespace DebuggerLib
                     case MessageFormat.EnterMessage:
                         Format += "{" + count.ToString() + "}";
                         break;
+                    case MessageFormat.ExitMessage:
+                        Format += "{" + count.ToString() + "}";
+                        break;
                     case MessageFormat.Message:
                         Format += " : {" + count.ToString() + "}";
                         break;
@@ -127,7 +143,7 @@ namespace DebuggerLib
             string number = "Line " + lineNumber.ToString();
             string date = string.Format("{0}.{1}", DateTime.Now, DateTime.Now.Millisecond);
 
-            debugMessage = string.Format(Format, date, WriterMode, callerName, number, EnterMessage, message);
+            debugMessage = string.Format(Format, date, WriterMode, callerName, number, EnterMessage, ExitMessage, message);
 
             Console.WriteLine(debugMessage);
         }

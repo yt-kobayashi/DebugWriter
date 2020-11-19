@@ -35,38 +35,45 @@ namespace Test
             debugger.Debug.Write("デバッグメッセージ");
             debugger.Error.Write("エラーメッセージ");
             debugger.Status.Write("ステータスメッセージ");
+            debugger.Exit.Write();
             debugger = new Debugger(Mode.Debug, 55);
             debugger.Enter.Write();
             debugger.Debug.Write("テスト開始");
             debugger.Debug.Write("デバッグメッセージ");
             debugger.Error.Write("エラーメッセージ");
             debugger.Status.Write("ステータスメッセージ");
+            debugger.Exit.Write();
             debugger = new Debugger(Mode.Debug, 43);
             debugger.Enter.Write();
             debugger.Debug.Write("テスト開始");
             debugger.Debug.Write("デバッグメッセージ");
             debugger.Error.Write("エラーメッセージ");
             debugger.Status.Write("ステータスメッセージ");
+            debugger.Exit.Write();
             debugger = new Debugger(Mode.Error);
             debugger.Enter.Write();
             debugger.Debug.Write("デバッグメッセージ");
             debugger.Error.Write("エラーメッセージ");
             debugger.Status.Write("ステータスメッセージ");
+            debugger.Exit.Write();
             debugger = new Debugger(Mode.Status);
             debugger.Enter.Write();
             debugger.Debug.Write("デバッグメッセージ");
             debugger.Error.Write("エラーメッセージ");
             debugger.Status.Write("ステータスメッセージ");
+            debugger.Exit.Write();
             debugger = new Debugger(Mode.Trace);
             debugger.Enter.Write();
             debugger.Debug.Write("デバッグメッセージ");
             debugger.Error.Write("エラーメッセージ");
             debugger.Status.Write("ステータスメッセージ");
+            debugger.Exit.Write();
             debugger = new Debugger(Mode.Release);
             debugger.Enter.Write();
             debugger.Debug.Write("デバッグメッセージ");
             debugger.Error.Write("エラーメッセージ");
             debugger.Status.Write("ステータスメッセージ");
+            debugger.Exit.Write();
         }
     }
 }
