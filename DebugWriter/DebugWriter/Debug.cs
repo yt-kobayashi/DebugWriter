@@ -37,6 +37,20 @@ namespace DebuggerLib
         void Write(in string message = "", [CallerMemberName] string callerName = "", [CallerLineNumber] int lineNumber = 0);
     }
 
+    /// <summary>
+    /// デバッグメッセージを出力するクラスです．
+    /// モードを設定することで出力を制御できます．
+    /// </summary>
+    /// <remarks>
+    /// モード<br/>
+    /// Debug       :   全てのメッセージが表示されます．
+    /// Error       :   Errorメッセージのみが表示されます．
+    /// Status      :   Statusメッセージのみが表示されます．
+    /// Trace       :   Trace, Enter, Exitメッセージが表示されます．
+    /// Release     :   全てのメッセージが表示されません．
+    /// Enter       :   Enter, Exitメッセージが表示されます．
+    /// Exit        :   Enter, Exitメッセージが表示されます．
+    /// </remarks>
     public class Debugger
     {
         public Writer Debug { get; set; }
