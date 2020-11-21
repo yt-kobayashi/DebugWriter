@@ -35,6 +35,7 @@ namespace DebuggerLib
     public interface Writer
     {
         void Write(in string message = "", [CallerMemberName] string callerName = "", [CallerLineNumber] int lineNumber = 0);
+        void WriteLine(in string message = "", [CallerMemberName] string callerName = "", [CallerLineNumber] int lineNumber = 0);
     }
 
     /// <summary>
@@ -159,6 +160,18 @@ namespace DebuggerLib
 
             debugMessage = string.Format(Format, date, WriterMode, callerName, number, EnterMessage, ExitMessage, message);
 
+            Console.Write(debugMessage);
+        }
+
+        public void WriteLine(in string message = "", [CallerMemberName] string callerName = "", [CallerLineNumber] int lineNumber = 0)
+        {
+            List<string> messageList = new List<string>();
+            string debugMessage = "";
+            string number = "Line " + lineNumber.ToString();
+            string date = string.Format("{0}.{1}", DateTime.Now, DateTime.Now.Millisecond);
+
+            debugMessage = string.Format(Format, date, WriterMode, callerName, number, EnterMessage, ExitMessage, message);
+
             Console.WriteLine(debugMessage);
         }
     }
@@ -166,5 +179,6 @@ namespace DebuggerLib
     public class DebugWriterEmpty : Writer
     {
         public void Write(in string message = "", [CallerMemberName] string callerName = "", [CallerLineNumber] int lineNumber = 0) { }
+        public void WriteLine(in string message = "", [CallerMemberName] string callerName = "", [CallerLineNumber] int lineNumber = 0) { }
     }
 }
