@@ -34,8 +34,8 @@ namespace DebuggerLib
 
     public interface Writer
     {
-        void Write(in string message = "", [CallerMemberName] string callerName = "", [CallerLineNumber] int lineNumber = 0);
-        void WriteLine(in string message = "", [CallerMemberName] string callerName = "", [CallerLineNumber] int lineNumber = 0);
+        void Write(in string message = "", [CallerMemberName] string callerName = "", [CallerLineNumber] int lineNumber = 0, object[] args);
+        void WriteLine(in string message = "", [CallerMemberName] string callerName = "", [CallerLineNumber] int lineNumber = 0, object[] args);
     }
 
     /// <summary>
@@ -153,17 +153,15 @@ namespace DebuggerLib
 
         public void Write(in string message = "", [CallerMemberName] string callerName = "", [CallerLineNumber] int lineNumber = 0)
         {
-            List<string> messageList = new List<string>();
-            string debugMessage = "";
-            string number = "Line " + lineNumber.ToString();
-            string date = string.Format("{0}.{1}", DateTime.Now, DateTime.Now.Millisecond);
-
-            debugMessage = string.Format(Format, date, WriterMode, callerName, number, EnterMessage, ExitMessage, message);
-
-            Console.Write(debugMessage);
+            Console.Write(GenerateMessage(message, callerName, lineNumber));
         }
 
         public void WriteLine(in string message = "", [CallerMemberName] string callerName = "", [CallerLineNumber] int lineNumber = 0)
+        {
+            Console.WriteLine(GenerateMessage(message, callerName, lineNumber));
+        }
+
+        private string GenerateMessage(in string message = "", string callerName = "", int lineNumber = 0)
         {
             List<string> messageList = new List<string>();
             string debugMessage = "";
@@ -172,7 +170,7 @@ namespace DebuggerLib
 
             debugMessage = string.Format(Format, date, WriterMode, callerName, number, EnterMessage, ExitMessage, message);
 
-            Console.WriteLine(debugMessage);
+            return debugMessage;
         }
     }
 
