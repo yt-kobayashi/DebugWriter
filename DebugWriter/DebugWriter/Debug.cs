@@ -34,8 +34,8 @@ namespace DebuggerLib
 
     public interface Writer
     {
-        void Write(in string message = "", [CallerMemberName] string callerName = "", [CallerLineNumber] int lineNumber = 0, object[] args);
-        void WriteLine(in string message = "", [CallerMemberName] string callerName = "", [CallerLineNumber] int lineNumber = 0, object[] args);
+        void Write(in string message = "", params object[] Params);
+        void WriteLine(in string message = "", params object[] Params);
     }
 
     /// <summary>
@@ -151,24 +151,25 @@ namespace DebuggerLib
             }
         }
 
-        public void Write(in string message = "", [CallerMemberName] string callerName = "", [CallerLineNumber] int lineNumber = 0)
+        public void Write(in string message = "", params object[] Params) 
         {
-            Console.Write(GenerateMessage(message, callerName, lineNumber));
+            Console.Write(GenerateMessage(message, Params));
+        }
+        public void WriteLine(in string message = "", params object[] Params)
+        {
+            Console.WriteLine(GenerateMessage(message, Params));
         }
 
-        public void WriteLine(in string message = "", [CallerMemberName] string callerName = "", [CallerLineNumber] int lineNumber = 0)
+        private string GenerateMessage(in string message, object[] Params)
         {
-            Console.WriteLine(GenerateMessage(message, callerName, lineNumber));
-        }
-
-        private string GenerateMessage(in string message = "", string callerName = "", int lineNumber = 0)
-        {
+            System.Diagnostics.StackFrame caller = new System.Diagnostics.StackFrame(3);
             List<string> messageList = new List<string>();
             string debugMessage = "";
-            string number = "Line " + lineNumber.ToString();
+            string number = "Line " + caller.GetFileLineNumber().ToString();
             string date = string.Format("{0}.{1}", DateTime.Now, DateTime.Now.Millisecond);
+            string optionMessage = string.Format(message, Params);
 
-            debugMessage = string.Format(Format, date, WriterMode, callerName, number, EnterMessage, ExitMessage, message);
+            debugMessage = string.Format(Format, date, WriterMode, caller.GetMethod().Name, number, EnterMessage, ExitMessage, optionMessage);
 
             return debugMessage;
         }
@@ -176,7 +177,7 @@ namespace DebuggerLib
 
     public class DebugWriterEmpty : Writer
     {
-        public void Write(in string message = "", [CallerMemberName] string callerName = "", [CallerLineNumber] int lineNumber = 0) { }
-        public void WriteLine(in string message = "", [CallerMemberName] string callerName = "", [CallerLineNumber] int lineNumber = 0) { }
+        public void Write(in string message = "", params object[] Params) { }
+        public void WriteLine(in string message = "", params object[] Params) { }
     }
 }
