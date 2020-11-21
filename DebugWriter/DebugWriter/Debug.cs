@@ -137,8 +137,6 @@ namespace DebuggerLib
                         Format += "[{" + count.ToString() + "}]";
                         break;
                     case MessageFormat.EnterMessage:
-                        Format += "{" + count.ToString() + "}";
-                        break;
                     case MessageFormat.ExitMessage:
                         Format += "{" + count.ToString() + "}";
                         break;
@@ -164,14 +162,11 @@ namespace DebuggerLib
         {
             System.Diagnostics.StackFrame caller = new System.Diagnostics.StackFrame(3);
             List<string> messageList = new List<string>();
-            string debugMessage = "";
             string number = "Line " + caller.GetFileLineNumber().ToString();
             string date = string.Format("{0}.{1}", DateTime.Now, DateTime.Now.Millisecond);
             string optionMessage = string.Format(message, Params);
 
-            debugMessage = string.Format(Format, date, WriterMode, caller.GetMethod().Name, number, EnterMessage, ExitMessage, optionMessage);
-
-            return debugMessage;
+            return string.Format(Format, date, WriterMode, caller.GetMethod().Name, number, EnterMessage, ExitMessage, optionMessage);
         }
     }
 
