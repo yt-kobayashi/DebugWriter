@@ -22,8 +22,8 @@ namespace DebuggerLib
         CallerName = 0x04,
         CallerLine = 0x08,
         EnterMessage = 0x10,
-        ExitMessage = 0x12,
-        Message = 0x14
+        ExitMessage = 0x20,
+        Message = 0x40
     }
 
     public class Param
@@ -132,10 +132,8 @@ namespace DebuggerLib
                         MessageFormat += "[{" + count.ToString() + "}]";
                         break;
                     case Format.EnterMessage:
-                        MessageFormat += Param.HasEnteredMessage;
-                        break;
                     case Format.ExitMessage:
-                        MessageFormat += Param.HasExitMessage;
+                        MessageFormat += "{" + count.ToString() + "}";
                         break;
                     case Format.Message:
                         MessageFormat += " : {" + count.ToString() + "}";
@@ -163,7 +161,7 @@ namespace DebuggerLib
             string date = string.Format("{0}.{1}", DateTime.Now, DateTime.Now.Millisecond);
             string optionMessage = string.Format(message, Params);
 
-            return string.Format(MessageFormat, date, WriterMode, caller.GetMethod().Name, number, optionMessage);
+            return string.Format(MessageFormat, date, WriterMode, caller.GetMethod().Name, number, Param.HasEnteredMessage, Param.HasExitMessage, optionMessage);
         }
     }
 
