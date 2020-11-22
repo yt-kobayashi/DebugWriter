@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace DebuggerLib
 {
-    public enum Mode
+    public enum Mode : int
     {
         Debug,
         Error,
@@ -15,18 +15,23 @@ namespace DebuggerLib
         Exit
     }
 
-    public class MessageFormat
+    public enum Format : int
     {
-        public const byte Date = 1;
-        public const byte Mode = 2;
-        public const byte Caller = 4;
-        public const byte Number = 8;
-        public const byte EnterMessage = 16;
-        public const byte ExitMessage = 32;
-        public const byte Message = 64;
-        public const byte DEFAULT = (byte)(Date | Mode | Caller | Message);
-        public const byte ENTER = (byte)(Date | Mode | Caller | EnterMessage | Message);
-        public const byte EXIT = (byte)(Date | Mode | Caller | ExitMessage | Message);
+        Date = 0x01,
+        Mode = 0x02,
+        CallerName = 0x04,
+        CallerLine = 0x08,
+        EnterMessage = 0x10,
+        ExitMessage = 0x12,
+        Message = 0x14
+    }
+
+    public class Param
+    {
+        public const Format FORMAT_DEFAULT = Format.Date | Format.Mode | Format.CallerName | Format.Message;
+        public const Format FORMAT_ENTER = Format.Date | Format.Mode | Format.CallerName | Format.EnterMessage | Format.Message;
+        public const Format FORMAT_EXIT = Format.Date | Format.Mode | Format.CallerName | Format.ExitMessage | Format.Message;
+        public const Format FORMAT_SIMPLE = Format.Date | Format.CallerName | Format.Message;
         public const string HasEnteredMessage = " - Enter";
         public const string HasExitMessage = " - Exit";
     }
@@ -62,7 +67,7 @@ namespace DebuggerLib
 
         private Dictionary<Mode, bool[]> ModeParam { get; set; }
 
-        public Debugger(in Mode mode, in byte format = MessageFormat.DEFAULT)
+        public Debugger(in Mode mode, in Format format = Param.FORMAT_DEFAULT)
         {
             ModeParam = new Dictionary<Mode, bool[]>();
             ModeParam.Add(Mode.Debug, new bool[] { true, true, true, true});
@@ -76,18 +81,18 @@ namespace DebuggerLib
             Initialize(mode, format);
         }
 
-        public void Initialize(in Mode mode, in byte format)
+        public void Initialize(in Mode mode, in Format format)
         {
             bool[] param = ModeParam[mode];
 
             Debug = SetWriter(param[0], Mode.Debug, format);
             Error = SetWriter(param[1], Mode.Error, format);
             Status = SetWriter(param[2], Mode.Status, format);
-            Enter = SetWriter(param[3], Mode.Enter, format);
-            Exit = SetWriter(param[3], Mode.Exit, format);
+            Enter = SetWriter(param[3], Mode.Enter, format | Format.EnterMessage);
+            Exit = SetWriter(param[3], Mode.Exit, format | Format.ExitMessage);
         }
 
-        public Writer SetWriter(in bool enable, in Mode mode, in byte format)
+        public Writer SetWriter(in bool enable, in Mode mode, in Format format)
         {
             Writer debugWriter = new DebugWriter(mode, format);
 
@@ -103,45 +108,37 @@ namespace DebuggerLib
     public class DebugWriter : Writer
     {
         private string WriterMode { get; set; }
-        private string EnterMessage { get; set; } = "";
-        private string ExitMessage { get; set; } = "";
-        private string Format { get; set; }
+        private string MessageFormat { get; set; }
 
-        public DebugWriter(in Mode mode, in byte format = MessageFormat.DEFAULT)
+        public DebugWriter(in Mode mode, in Format format = (Format)Param.FORMAT_DEFAULT)
         {
-            byte messageFormat = format;
-            if (Mode.Enter == mode)
-            {
-                messageFormat = MessageFormat.ENTER;
-                EnterMessage = MessageFormat.HasEnteredMessage;
-            }
-            else if(Mode.Exit == mode)
-            {
-                messageFormat = MessageFormat.EXIT;
-                ExitMessage = MessageFormat.HasExitMessage;
-            }
-
             WriterMode = mode.ToString();
-            byte mask;
+            InitializeFormat(format);
+        }
 
-            for(int count = 0; count < 8; count++)
+        private void InitializeFormat(in Format format)
+        {
+            int mask;
+
+            for (int count = 0; count < (sizeof(int) * 8); count++)
             {
-                mask = (byte)(1 << count);
-
-                switch(messageFormat & mask)
+                mask = 0x01 << count;
+                switch (format & (Format)mask)
                 {
-                    case MessageFormat.Date:
-                    case MessageFormat.Mode:
-                    case MessageFormat.Caller:
-                    case MessageFormat.Number:
-                        Format += "[{" + count.ToString() + "}]";
+                    case Format.Date:
+                    case Format.Mode:
+                    case Format.CallerName:
+                    case Format.CallerLine:
+                        MessageFormat += "[{" + count.ToString() + "}]";
                         break;
-                    case MessageFormat.EnterMessage:
-                    case MessageFormat.ExitMessage:
-                        Format += "{" + count.ToString() + "}";
+                    case Format.EnterMessage:
+                        MessageFormat += Param.HasEnteredMessage;
                         break;
-                    case MessageFormat.Message:
-                        Format += " : {" + count.ToString() + "}";
+                    case Format.ExitMessage:
+                        MessageFormat += Param.HasExitMessage;
+                        break;
+                    case Format.Message:
+                        MessageFormat += " : {" + count.ToString() + "}";
                         break;
                     default:
                         break;
@@ -166,7 +163,7 @@ namespace DebuggerLib
             string date = string.Format("{0}.{1}", DateTime.Now, DateTime.Now.Millisecond);
             string optionMessage = string.Format(message, Params);
 
-            return string.Format(Format, date, WriterMode, caller.GetMethod().Name, number, EnterMessage, ExitMessage, optionMessage);
+            return string.Format(MessageFormat, date, WriterMode, caller.GetMethod().Name, number, optionMessage);
         }
     }
 
