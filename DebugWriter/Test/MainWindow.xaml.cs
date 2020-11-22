@@ -36,14 +36,14 @@ namespace Test
             debugger.Error.WriteLine("エラーメッセージ");
             debugger.Status.WriteLine("ステータスメッセージ");
             debugger.Exit.WriteLine();
-            debugger = new Debugger(Mode.Debug, 55);
+            debugger = new Debugger(Mode.Debug, Param.FORMAT_SIMPLE);
             debugger.Enter.WriteLine();
             debugger.Debug.WriteLine("テスト開始");
             debugger.Debug.WriteLine("デバッグメッセージ");
             debugger.Error.WriteLine("エラーメッセージ");
             debugger.Status.WriteLine("ステータスメッセージ");
             debugger.Exit.WriteLine();
-            debugger = new Debugger(Mode.Debug, 43);
+            debugger = new Debugger(Mode.Debug, Param.FORMAT_DEFAULT | Format.CallerLine);
             debugger.Enter.WriteLine();
             debugger.Debug.WriteLine("テスト開始");
             debugger.Debug.WriteLine("デバッグメッセージ");
