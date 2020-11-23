@@ -4,6 +4,9 @@ using System.Runtime.CompilerServices;
 
 namespace DebuggerLib
 {
+    /// <summary>
+    /// デバッグモード
+    /// </summary>
     public enum Mode : int
     {
         Debug,
@@ -15,6 +18,9 @@ namespace DebuggerLib
         Exit
     }
 
+    /// <summary>
+    /// 表示を行う要素
+    /// </summary>
     public enum Format : int
     {
         Date = 0x01,
@@ -26,6 +32,9 @@ namespace DebuggerLib
         Message = 0x40
     }
 
+    /// <summary>
+    /// 本ライブラリで使用する定数
+    /// </summary>
     public class Param
     {
         public const Format FORMAT_DEFAULT = Format.Date | Format.Mode | Format.CallerName | Format.Message;
@@ -36,7 +45,9 @@ namespace DebuggerLib
         public const string HasExitMessage = " - Exit";
     }
 
-
+    /// <summary>
+    /// インターフェース
+    /// </summary>
     public interface Writer
     {
         void Write(in string message = "", params object[] Params);
@@ -44,18 +55,18 @@ namespace DebuggerLib
     }
 
     /// <summary>
-    /// デバッグメッセージを出力するクラスです．
-    /// モードを設定することで出力を制御できます．
+    /// デバッグメッセージを出力するクラス．
+    /// モードを設定することで出力を制御できる．
     /// </summary>
     /// <remarks>
     /// モード<br/>
-    /// Debug       :   全てのメッセージが表示されます．
-    /// Error       :   Errorメッセージのみが表示されます．
-    /// Status      :   Statusメッセージのみが表示されます．
-    /// Trace       :   Trace, Enter, Exitメッセージが表示されます．
-    /// Release     :   全てのメッセージが表示されません．
-    /// Enter       :   Enter, Exitメッセージが表示されます．
-    /// Exit        :   Enter, Exitメッセージが表示されます．
+    /// Debug       :   全てのメッセージが表示される．
+    /// Error       :   Errorメッセージのみが表示される．
+    /// Status      :   Statusメッセージのみが表示される．
+    /// Trace       :   Trace, Enter, Exitメッセージが表示される．
+    /// Release     :   全てのメッセージが表示されない．
+    /// Enter       :   Enter, Exitメッセージが表示される．
+    /// Exit        :   Enter, Exitメッセージが表示される
     /// </remarks>
     public class Debugger
     {
@@ -105,6 +116,9 @@ namespace DebuggerLib
         }
     }
 
+    /// <summary>
+    /// デバッグ表示を行うメソッドの本体を格納するクラス．
+    /// </summary>
     public class DebugWriter : Writer
     {
         private string WriterMode { get; set; }
@@ -165,6 +179,9 @@ namespace DebuggerLib
         }
     }
 
+    /// <summary>
+    /// リリースモードで使われる空クラス．
+    /// </summary>
     public class DebugWriterEmpty : Writer
     {
         public void Write(in string message = "", params object[] Params) { }
