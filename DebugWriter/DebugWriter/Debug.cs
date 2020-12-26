@@ -134,7 +134,7 @@ namespace DebuggerLib
 
             if(null == LogFilePath)
             {
-                LogFilePath = string.Join("", Param.PROJECT_FILEPATH, "Debug_", DateTime.Now.ToString("yyyyMMddHHmmss"), ".log");
+                LogFilePath = string.Join("", Param.PROJECT_FILEPATH, "\\Debug_", DateTime.Now.ToString("yyyyMMddHHmmss"), ".log");
             }
         }
 
