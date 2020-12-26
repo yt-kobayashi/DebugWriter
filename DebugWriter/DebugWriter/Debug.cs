@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+using System.IO;
+using System.Text;
 
 namespace DebuggerLib
 {
@@ -43,6 +44,7 @@ namespace DebuggerLib
         public const Format FORMAT_SIMPLE = Format.Date | Format.CallerName | Format.Message;
         public const string HasEnteredMessage = " - Enter";
         public const string HasExitMessage = " - Exit";
+        public static string PROJECT_FILEPATH = Directory.GetCurrentDirectory();
     }
 
     /// <summary>
@@ -123,11 +125,17 @@ namespace DebuggerLib
     {
         private string WriterMode { get; set; }
         private string MessageFormat { get; set; }
+        private static string LogFilePath { get; set; }             // ログを出力するファイルパス
 
         public DebugWriter(in Mode mode, in Format format = (Format)Param.FORMAT_DEFAULT)
         {
             WriterMode = mode.ToString();
             InitializeFormat(format);
+
+            if(null == LogFilePath)
+            {
+                LogFilePath = string.Join("", Param.PROJECT_FILEPATH, "Debug_", DateTime.Now.ToString("yyyyMMddHHmmss"), ".log");
+            }
         }
 
         private void InitializeFormat(in Format format)
@@ -160,11 +168,27 @@ namespace DebuggerLib
 
         public void Write(in string message = "", params object[] Params) 
         {
-            Console.Write(GenerateMessage(message, Params));
+            if(Mode.Release.ToString() == WriterMode)
+            {
+                return;
+            }
+
+            using(var stream = new StreamWriter(LogFilePath, true, Encoding.UTF8))
+            {
+                stream.Write(GenerateMessage(message, Params));
+            }
         }
         public void WriteLine(in string message = "", params object[] Params)
         {
-            Console.WriteLine(GenerateMessage(message, Params));
+            if(Mode.Release.ToString() == WriterMode)
+            {
+                return;
+            }
+
+            using(var stream = new StreamWriter(LogFilePath, true, Encoding.UTF8))
+            {
+                stream.WriteLine(GenerateMessage(message, Params));
+            }
         }
 
         private string GenerateMessage(in string message, object[] Params)
