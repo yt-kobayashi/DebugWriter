@@ -167,6 +167,8 @@ namespace DebuggerLib
         private string WriterMode { get; set; }
         private string MessageFormat { get; set; }
         private static string LogFilePath { get; set; }             // ログを出力するファイルパス
+        private const int CALLER_STACKFRAME = 2;
+        private const int HIGHER_CALLER_STACKFRAME = 3;
 
         public DebugWriter(in Mode mode, in Format format = (Format)Param.FORMAT_DEFAULT)
         {
@@ -220,8 +222,8 @@ namespace DebuggerLib
 
         private string GenerateMessage(in string message, object[] Params)
         {
-            System.Diagnostics.StackFrame caller = new System.Diagnostics.StackFrame(2);
-            System.Diagnostics.StackFrame ownerCaller = new System.Diagnostics.StackFrame(3);
+            System.Diagnostics.StackFrame caller = new System.Diagnostics.StackFrame(CALLER_STACKFRAME);
+            System.Diagnostics.StackFrame ownerCaller = new System.Diagnostics.StackFrame(HIGHER_CALLER_STACKFRAME);
             string callerName = "";
             string number = "Line " + caller.GetFileLineNumber().ToString();
             string date = string.Format("{0}.{1}", DateTime.Now, DateTime.Now.Millisecond);
