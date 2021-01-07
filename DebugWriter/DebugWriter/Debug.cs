@@ -81,43 +81,37 @@ namespace DebuggerLib
         public Writer Enter { get; set; }
         public Writer Exit { get; set; }
 
-        private Dictionary<Mode, bool[]> ModeParam { get; set; }
-
         public Debugger(in Mode mode, in Format format = Param.FORMAT_DEFAULT)
         {
-            ModeParam = new Dictionary<Mode, bool[]>();
-            ModeParam.Add(Mode.Debug, new bool[] { true, true, true, true});
-            ModeParam.Add(Mode.Error, new bool[] { false, true, false, false});
-            ModeParam.Add(Mode.Trace, new bool[] { false, false, true, true});
-            ModeParam.Add(Mode.Status, new bool[] { false, false, true, false});
-            ModeParam.Add(Mode.Enter, new bool[] { false, false, false, true});
-            ModeParam.Add(Mode.Exit, new bool[] { false, false, false, true});
-            ModeParam.Add(Mode.Release, new bool[] { false, false, false, false});
-
             Initialize(mode, format);
         }
 
         public void Initialize(in Mode mode, in Format format)
         {
-            bool[] param = ModeParam[mode];
-
-            Debug = SetWriter(param[0], Mode.Debug, format);
-            Error = SetWriter(param[1], Mode.Error, format);
-            Status = SetWriter(param[2], Mode.Status, format);
-            Enter = SetWriter(param[3], Mode.Enter, format | Format.EnterMessage);
-            Exit = SetWriter(param[3], Mode.Exit, format | Format.ExitMessage);
+            Debug = SetWriter(mode, Mode.Debug, format);
+            Error = SetWriter(mode, Mode.Error, format);
+            Status = SetWriter(mode, Mode.Status, format);
+            Enter = SetWriter(mode, Mode.Enter, format | Format.EnterMessage);
+            Exit = SetWriter(mode, Mode.Exit, format | Format.ExitMessage);
         }
 
-        public Writer SetWriter(in bool enable, in Mode mode, in Format format)
+        public Writer SetWriter(in Mode mode, in Mode writerType, in Format format)
         {
-            Writer debugWriter = new DebugWriter(mode, format);
+            Writer debugWriter = new DebugWriter(writerType, format);
 
-            if (false == enable)
+            if (false == Enable(mode, writerType))
             {
                 debugWriter = new DebugWriterEmpty();
             }
 
             return debugWriter;
+        }
+
+        private bool Enable(in Mode mode, in Mode writerType)
+        {
+            bool ret = (0 != (mode & writerType));
+
+            return ret;
         }
     }
 
