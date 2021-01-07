@@ -8,35 +8,46 @@ namespace ConsoleTest
         static void Main(string[] args)
         {
             Debugger debugger = new Debugger(Mode.Debug);
-            debugger.Enter.WriteLine("Debug Test");
-            debugger.Debug.WriteLine("DEBUG");
-            debugger.Error.WriteLine("ERROR");
-            debugger.Status.WriteLine("STATUS");
-            debugger.Exit.WriteLine("Debug Test");
+            debugger.EnterWriteLine("Debug Test");
+            debugger.DebugWriteLine("DEBUG");
+            debugger.ErrorWriteLine("ERROR");
+            debugger.StatusWriteLine("STATUS");
+            debugger.ExitWriteLine("Debug Test");
             debugger = new Debugger(Mode.Error);
-            debugger.Enter.WriteLine("Error Test");
-            debugger.Debug.WriteLine("DEBUG");
-            debugger.Error.WriteLine("ERROR");
-            debugger.Status.WriteLine("STATUS");
-            debugger.Exit.WriteLine("Error Test");
+            debugger.EnterWriteLine("Error Test");
+            debugger.DebugWriteLine("DEBUG");
+            debugger.ErrorWriteLine("ERROR");
+            debugger.StatusWriteLine("STATUS");
+            debugger.ExitWriteLine("Error Test");
             debugger = new Debugger(Mode.Trace);
-            debugger.Enter.WriteLine("Trace Test");
-            debugger.Debug.WriteLine("DEBUG");
-            debugger.Error.WriteLine("ERROR");
-            debugger.Status.WriteLine("STATUS");
-            debugger.Exit.WriteLine("Trace Test");
+            debugger.EnterWriteLine("Trace Test");
+            debugger.DebugWriteLine("DEBUG");
+            debugger.ErrorWriteLine("ERROR");
+            debugger.StatusWriteLine("STATUS");
+            debugger.ExitWriteLine("Trace Test");
             debugger = new Debugger(Mode.Status);
-            debugger.Enter.WriteLine("Status Test");
-            debugger.Debug.WriteLine("DEBUG");
-            debugger.Error.WriteLine("ERROR");
-            debugger.Status.WriteLine("STATUS");
-            debugger.Exit.WriteLine("Status Test");
+            debugger.EnterWriteLine("Status Test");
+            debugger.DebugWriteLine("DEBUG");
+            debugger.ErrorWriteLine("ERROR");
+            debugger.StatusWriteLine("STATUS");
+            debugger.ExitWriteLine("Status Test");
             debugger = new Debugger(Mode.Release);
-            debugger.Enter.WriteLine("Release Test");
-            debugger.Debug.WriteLine("DEBUG");
-            debugger.Error.WriteLine("ERROR");
-            debugger.Status.WriteLine("STATUS");
-            debugger.Exit.WriteLine("Release Test");
+            debugger.EnterWriteLine("Release Test");
+            debugger.DebugWriteLine("DEBUG");
+            debugger.ErrorWriteLine("ERROR");
+            debugger.StatusWriteLine("STATUS");
+            debugger.ExitWriteLine("Release Test");
+            debugger = new Debugger(Mode.All);
+            Sample(debugger);
+        }
+
+        static void Sample(Debugger debugger)
+        {
+            debugger.EnterWriteLine("Sample Test");
+            debugger.DebugWriteLine("DEBUG");
+            debugger.ErrorWriteLine("ERROR");
+            debugger.StatusWriteLine("STATUS");
+            debugger.ExitWriteLine("Sample Test");
         }
     }
 }
