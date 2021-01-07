@@ -18,6 +18,7 @@ namespace DebuggerLib
         Exit = 0x10,
         All = 0xFF,
         Trace = Error | Status | Enter | Exit,
+        Info = Status | Enter | Exit,
         Access = Enter | Exit,
         Message = Debug | Error | Status
     }
@@ -73,6 +74,7 @@ namespace DebuggerLib
     /// Exit        :   Enter, Exitメッセージが表示される.
     /// All         :   全てのメッセージが表示される.
     /// Trace       :   Error, Status, Enter, Exitメッセージが表示される．
+    /// Info        :   Status, Enter, Exitメッセージが表示される．
     /// Access      :   Enter, Exitメッセ―じが表示される．
     /// Message     :   Debug, Error, Statusメッセージが表示される．
     /// </remarks>
