@@ -32,9 +32,7 @@ namespace DebuggerLib
         Mode = 0x02,
         CallerName = 0x04,
         CallerLine = 0x08,
-        EnterMessage = 0x10,
-        ExitMessage = 0x20,
-        Message = 0x40
+        Message = 0x10
     }
 
     /// <summary>
@@ -43,11 +41,7 @@ namespace DebuggerLib
     public class Param
     {
         public const Format FORMAT_DEFAULT = Format.Date | Format.Mode | Format.CallerName | Format.Message;
-        public const Format FORMAT_ENTER = Format.Date | Format.Mode | Format.CallerName | Format.EnterMessage | Format.Message;
-        public const Format FORMAT_EXIT = Format.Date | Format.Mode | Format.CallerName | Format.ExitMessage | Format.Message;
         public const Format FORMAT_SIMPLE = Format.Date | Format.CallerName | Format.Message;
-        public const string HasEnteredMessage = " - Enter";
-        public const string HasExitMessage = " - Exit";
         public static string PROJECT_FILEPATH = Directory.GetCurrentDirectory();
     }
 
@@ -127,8 +121,8 @@ namespace DebuggerLib
             Debug = SetWriter(mode, Mode.Debug, format);
             Error = SetWriter(mode, Mode.Error, format);
             Status = SetWriter(mode, Mode.Status, format);
-            Enter = SetWriter(mode, Mode.Enter, format | Format.EnterMessage);
-            Exit = SetWriter(mode, Mode.Exit, format | Format.ExitMessage);
+            Enter = SetWriter(mode, Mode.Enter, format);
+            Exit = SetWriter(mode, Mode.Exit, format);
         }
 
         private Writer SetWriter(in Mode mode, in Mode writerType, in Format format)
@@ -200,10 +194,6 @@ namespace DebuggerLib
                     case Format.CallerLine:
                         MessageFormat += "[{" + count.ToString() + "}]";
                         break;
-                    case Format.EnterMessage:
-                    case Format.ExitMessage:
-                        MessageFormat += "{" + count.ToString() + "}";
-                        break;
                     case Format.Message:
                         MessageFormat += " : {" + count.ToString() + "}";
                         break;
@@ -243,7 +233,7 @@ namespace DebuggerLib
             }
             callerName += caller.GetMethod().Name;
 
-            return string.Format(MessageFormat, date, WriterMode, callerName, number, Param.HasEnteredMessage, Param.HasExitMessage, optionMessage);
+            return string.Format(MessageFormat, date, WriterMode, callerName, number, optionMessage);
         }
     }
 
