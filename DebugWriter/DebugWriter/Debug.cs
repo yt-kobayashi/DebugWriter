@@ -10,13 +10,16 @@ namespace DebuggerLib
     /// </summary>
     public enum Mode : int
     {
-        Debug,
-        Error,
-        Status,
-        Trace,
-        Release,
-        Enter,
-        Exit
+        Release = 0x00,
+        Debug = 0x01,
+        Error = 0x02,
+        Status = 0x04,
+        Enter = 0x08,
+        Exit = 0x10,
+        All = 0xFF,
+        Trace = Error | Status | Enter | Exit,
+        Access = Enter | Exit,
+        Message = Debug | Error | Status
     }
 
     /// <summary>
