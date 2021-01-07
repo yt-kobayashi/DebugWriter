@@ -165,11 +165,6 @@ namespace DebuggerLib
 
         public void Write(in string message = "", params object[] Params) 
         {
-            if(Mode.Release.ToString() == WriterMode)
-            {
-                return;
-            }
-
             using(var stream = new StreamWriter(LogFilePath, true, Encoding.UTF8))
             {
                 stream.Write(GenerateMessage(message, Params));
@@ -177,11 +172,6 @@ namespace DebuggerLib
         }
         public void WriteLine(in string message = "", params object[] Params)
         {
-            if(Mode.Release.ToString() == WriterMode)
-            {
-                return;
-            }
-
             using(var stream = new StreamWriter(LogFilePath, true, Encoding.UTF8))
             {
                 stream.WriteLine(GenerateMessage(message, Params));
