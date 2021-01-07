@@ -37,6 +37,17 @@ namespace ConsoleTest
             debugger.ErrorWriteLine("ERROR");
             debugger.StatusWriteLine("STATUS");
             debugger.ExitWriteLine("Release Test");
+            debugger = new Debugger(Mode.All);
+            Sample(debugger);
+        }
+
+        static void Sample(Debugger debugger)
+        {
+            debugger.EnterWriteLine("Sample Test");
+            debugger.DebugWriteLine("DEBUG");
+            debugger.ErrorWriteLine("ERROR");
+            debugger.StatusWriteLine("STATUS");
+            debugger.ExitWriteLine("Sample Test");
         }
     }
 }

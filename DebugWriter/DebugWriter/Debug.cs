@@ -231,12 +231,19 @@ namespace DebuggerLib
         private string GenerateMessage(in string message, object[] Params)
         {
             System.Diagnostics.StackFrame caller = new System.Diagnostics.StackFrame(2);
-            List<string> messageList = new List<string>();
+            System.Diagnostics.StackFrame ownerCaller = new System.Diagnostics.StackFrame(3);
+            string callerName = "";
             string number = "Line " + caller.GetFileLineNumber().ToString();
             string date = string.Format("{0}.{1}", DateTime.Now, DateTime.Now.Millisecond);
             string optionMessage = string.Format(message, Params);
 
-            return string.Format(MessageFormat, date, WriterMode, caller.GetMethod().Name, number, Param.HasEnteredMessage, Param.HasExitMessage, optionMessage);
+            if("<null>\r\n" != ownerCaller.ToString())
+            {
+                callerName = ownerCaller.GetMethod().Name + " -> ";
+            }
+            callerName += caller.GetMethod().Name;
+
+            return string.Format(MessageFormat, date, WriterMode, callerName, number, Param.HasEnteredMessage, Param.HasExitMessage, optionMessage);
         }
     }
 
